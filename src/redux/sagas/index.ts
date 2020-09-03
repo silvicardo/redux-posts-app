@@ -1,5 +1,9 @@
-import { put, call } from "redux-saga/effects";
-import { FETCH_POSTS_LIST_SUCCESS, FETCH_POSTS_LIST_FAILURE } from "../actions";
+import { put, call, select } from "redux-saga/effects";
+import {
+  FETCH_POSTS_LIST_SUCCESS,
+  FETCH_POSTS_LIST_FAILURE,
+  FETCH_POSTS_LIST_SKIPPED,
+} from "../actions";
 
 // const apiList = () => {
 //   return fetch("https://jsonplaceholder.typicode.com/posts")
@@ -13,6 +17,11 @@ const apiList = async () => {
 };
 
 export function* sagaPostList() {
+  const list = yield select((state) => state.posts.list);
+  if (list.length > 0) {
+    yield put({ type: FETCH_POSTS_LIST_SKIPPED });
+    return;
+  }
   try {
     //API
     const response = yield call(apiList);
